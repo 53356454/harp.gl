@@ -12,6 +12,8 @@ import * as THREE from "three";
 
 import { EventNames, MapControls } from "./MapControls";
 
+// declare type TweenProps = Record<string, number>;
+
 /**
  * Functions used for specifying animations' speed.
  */
@@ -65,7 +67,7 @@ export abstract class CameraAnimation {
     /**
      * Tweening controller.
      */
-    protected tween?: TWEEN.Tween;
+    protected tween?: TWEEN.Tween<GeoCoordinates | Record<string, number>>;
 
     /**
      * `True` if animation is being played.
@@ -452,7 +454,9 @@ export class CameraPanAnimation extends CameraAnimation {
             })
             .onUpdate(({ latitude, longitude, altitude }) => {
                 this.mapView.geoCenter = new GeoCoordinates(latitude, longitude, altitude);
-                this.mapView.camera.position.z = altitude;
+                if (altitude) {
+                  this.mapView.camera.position.z = altitude;
+                }
             });
 
         this.tween.repeat(this.repeat);
