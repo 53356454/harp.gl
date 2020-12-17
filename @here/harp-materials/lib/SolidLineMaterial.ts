@@ -423,12 +423,6 @@ export class SolidLineMaterial extends RawShaderMaterial
     static DEFAULT_OFFSET: number = 0.0;
 
     /**
-     * @hidden
-     * Material properties overrides.
-     */
-    private m_opacity: number;
-
-    /**
      * Constructs a new `SolidLineMaterial`.
      *
      * @param params - `SolidLineMaterial` parameters. Always required except when cloning another
@@ -519,7 +513,7 @@ export class SolidLineMaterial extends RawShaderMaterial
         // assigned in the constructor, this also mimics ShaderMaterial set of defaults
         // for overridden props.
         this.fog = fogParam;
-        this.m_opacity = opacityParam;
+        this.setOpacity(opacityParam);
 
         // initialize the stencil pass
         this.stencilFunc = THREE.NotEqualStencilFunc;
@@ -547,7 +541,7 @@ export class SolidLineMaterial extends RawShaderMaterial
                 this.outlineWidth = params.outlineWidth;
             }
             if (params.opacity !== undefined) {
-                this.opacity = params.opacity;
+                this.setOpacity(params.opacity);
             }
             if (params.depthTest !== undefined) {
                 this.depthTest = params.depthTest;
@@ -629,22 +623,17 @@ export class SolidLineMaterial extends RawShaderMaterial
     }
 
     /**
-     * Line opacity.
+     * To set the opacity inclusive updating the uniforms and stencilWrite.
      */
-    // @ts-ignore
-    get opacity(): number {
-        return this.m_opacity;
-    }
-
-    set opacity(value: number) {
-        this.m_opacity = value;
+    setOpacity(value: number) {
+        this.opacity = value;
         // Setting opacity before uniform being created requires late invalidation,
         // call to invalidateOpacity() is done at the end of c-tor.
         if (this.uniforms?.opacity) {
             this.uniforms.opacity.value = value;
         }
 
-        this.stencilWrite = this.m_opacity < 0.98;
+        this.stencilWrite = value < 0.98;
     }
 
     /**
@@ -737,7 +726,7 @@ export class SolidLineMaterial extends RawShaderMaterial
         setShaderMaterialDefine(this, "USE_DASHED_LINE", value > 0.0);
 
         if (this.uniforms?.gapSize?.value === 0) {
-            this.stencilWrite = this.m_opacity < 0.98;
+            this.stencilWrite = this.opacity < 0.98;
         }
     }
 
@@ -845,13 +834,13 @@ export class SolidLineMaterial extends RawShaderMaterial
     copy(other: SolidLineMaterial): this {
         super.copy(other);
         this.invalidateFog();
-        this.opacity = other.opacity;
+        this.setOpacity(other.opacity);
         return this;
     }
 
     private invalidateOpacity() {
-        if (this.m_opacity !== this.uniforms.opacity.value) {
-            this.uniforms.opacity.value = this.m_opacity;
+        if (this.opacity !== this.uniforms.opacity.value) {
+            this.uniforms.opacity.value = this.opacity;
         }
     }
 }
