@@ -55,7 +55,7 @@ export class RawShaderMaterial extends THREE.RawShaderMaterial {
         this.invalidateFog();
     }
 
-    protected invalidateFog() {
+    invalidateFog() {
         if (this.defines !== undefined && this.fog !== getShaderMaterialDefine(this, "USE_FOG")) {
             setShaderMaterialDefine(this, "USE_FOG", this.fog);
         }
