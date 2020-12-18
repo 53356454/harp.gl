@@ -5,7 +5,7 @@
  */
 import { mercatorProjection, TileKey } from "@here/harp-geoutils";
 import { CopyrightInfo, MapView, Tile } from "@here/harp-mapview";
-import { TileGeometryCreator } from "@here/harp-mapview/lib/geometry/TileGeometryCreator";
+import { addGroundPlane } from "@here/harp-mapview/lib/geometry/AddGroundPlane";
 import { LoggerManager } from "@here/harp-utils";
 import { expect } from "chai";
 import * as sinon from "sinon";
@@ -121,7 +121,7 @@ describe("WebTileDataSource", function() {
             return fakeMapView;
         });
 
-        const creatorSpy = sinon.spy(TileGeometryCreator.instance, "addGroundPlane");
+        const creatorSpy = sinon.spy(addGroundPlane);
 
         const tileKey = TileKey.fromRowColumnLevel(0, 0, 0);
         const tile = webTileDataSource.getTile(tileKey);
